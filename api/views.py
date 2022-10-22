@@ -9,7 +9,6 @@ from api.serializers import *
 from rest_framework import viewsets
 
 
-
 @api_view()
 def livro1(request):
     livro = Livro.objects.get(id=3)
@@ -18,6 +17,14 @@ def livro1(request):
     }
     return Response(contexto)
 
+
 class LivroViewSet(viewsets.ModelViewSet):
     queryset = Livro.objects.all()
     serializer_class = LivroSerializer
+
+    def get_queryset(self):
+        livros = Livro.objects.all()
+        livronome = self.request.query_params.get('nomelivroback', None)
+        if livronome is not None and livronome != '':
+            livros = livros.filter(nome__icontains=livronome)
+        return livros
